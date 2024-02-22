@@ -1,0 +1,27 @@
+import os
+import rasterio
+
+# Paths
+input_file = 'your_large_image.tif'
+output_folder = 'output_folder'
+output_file = os.path.join(output_folder, 'your_updated_image.tif')
+
+# Open the raster dataset in 'deferred' mode
+with rasterio.open(input_file, 'r', deferred=True) as src:
+    # Get the existing tags
+    tags = src.tags()
+
+# Update the tags
+tags['New_Tag'] = 'Value'
+
+# Create the output folder if it doesn't exist
+os.makedirs(output_folder, exist_ok=True)
+
+# Open the raster dataset again, this time for writing
+with rasterio.open(output_file, 'w', **src.profile) as dst:
+    # Copy the data from the source dataset to the destination dataset
+    for i in range(1, src.count + 1):
+        dst.write(src.read(i), i)
+
+    # Update the tags in the destination dataset
+    dst.update_tags(**tags)
