@@ -1,11 +1,36 @@
-fix my t sql statment:CREATE EXTERNAL TABLE dbo.factpayment 
+CREATE EXTERNAL TABLE dbo.factpayment (
+trip_id nvarchar(4000),
+date_key nvarchar(4000), 
+rider_id bigint
+start_station_id_key datetime2(0),
+end_station_id_key datetime2(0),
+started_at_time nvarchar(4000),
+ended_at_time nvarchar(4000),
+trip_duration_min datetime2(0),
+rideable_type nvarchar(4000),
+rider_age int
+)
+
 WITH (
     LOCATION     = 'factpayment',
     DATA_SOURCE = [udacitydemo2hqxb_udacitydemo2hqxb_dfs_core_windows_net],
     FILE_FORMAT = [SynapseDelimitedTextFormat]
-)  
+);
 AS
-    payment_id INT,
-    date_key DATE,
-    rider_id INT,
-    amount_payment DECIMAL(10, 2);
+SELECT
+st.[trip_id] AS trip_id,
+st.[rider_id] AS rider_id,
+st.[start_station_id] AS start_station_id,
+st.[end_station_id] AS end_station_id,
+st.[start_at] AS started_at_time,
+st.[ended_at] AS ended_at_time,
+st.[rideable_type] AS rideable_type,
+FROM [dbo].[StagingTrip]st;
+
+
+TO_CHAR(p.payment_date :: DATE, 'yyyyMMDD')::integer AS date_key, 
+AS trip_duration_min, ended_at_time - started_at_time,
+rider_age, 	from StagingRider sr Join[rider_id]with StagingTrip [rider_id] st,
+sr.[birthday] datetime2(0),
+st.[start_at] datetime2(0)
+rider_age = start_at - birthday
