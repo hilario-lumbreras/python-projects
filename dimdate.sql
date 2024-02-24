@@ -36,9 +36,9 @@ WITH (
     FILE_FORMAT = [SynapseDelimitedTextFormat]
 )
 AS
-SELECT DISTINCT
-    CAST(CONVERT(VARCHAR(8), date, 112) AS INT) AS date_key,
-    CONVERT(VARCHAR(10), date, 23) AS [date],
+SELECT 
+    CONVERT(INT, CONVERT(VARCHAR(8), date, 112)) AS date_key,
+    date AS [date],
     DATEPART(YEAR, date) AS [year],
     DATEPART(QUARTER, date) AS [quarter],
     DATEPART(MONTH, date) AS [month],
