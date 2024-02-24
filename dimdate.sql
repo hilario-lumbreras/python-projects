@@ -3,7 +3,7 @@ BEGIN
     CREATE EXTERNAL FILE FORMAT [SynapseDelimitedTextFormat] 
     WITH (
         FORMAT_TYPE = DELIMITEDTEXT ,
-        FORMAT_OPTIONS (
+        FORMAT_OPTIONS = (
             FIELD_TERMINATOR = ',',
             USE_TYPE_DEFAULT = FALSE
         )
@@ -28,7 +28,7 @@ CREATE EXTERNAL TABLE dbo.dimdate (
     [month] INT,
     [day] INT,
     [day_of_week] INT,
-    [weekend] BOOLEAN
+    [weekend] BIT
 )
 WITH (
     LOCATION     = 'dimdate',
@@ -37,7 +37,7 @@ WITH (
 )
 AS
 SELECT DISTINCT
-    CONVERT(INT, CONVERT(VARCHAR(8), date, 112)) AS date_key,
+    CAST(CONVERT(VARCHAR(8), date, 112) AS INT) AS date_key,
     CONVERT(VARCHAR(10), date, 23) AS [date],
     DATEPART(YEAR, date) AS [year],
     DATEPART(QUARTER, date) AS [quarter],
