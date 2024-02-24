@@ -1,0 +1,11 @@
+fix my t sql statment:CREATE EXTERNAL TABLE dbo.factpayment 
+WITH (
+    LOCATION     = 'factpayment',
+    DATA_SOURCE = [udacitydemo2hqxb_udacitydemo2hqxb_dfs_core_windows_net],
+    FILE_FORMAT = [SynapseDelimitedTextFormat]
+)  
+AS
+    payment_id INT,
+    date_key DATE,
+    rider_id INT,
+    amount_payment DECIMAL(10, 2);
