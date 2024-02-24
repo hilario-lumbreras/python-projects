@@ -1,36 +1,45 @@
 CREATE EXTERNAL TABLE dbo.factpayment (
-trip_id nvarchar(4000),
-date_key nvarchar(4000), 
-rider_id bigint
-start_station_id_key datetime2(0),
-end_station_id_key datetime2(0),
-started_at_time nvarchar(4000),
-ended_at_time nvarchar(4000),
-trip_duration_min datetime2(0),
-rideable_type nvarchar(4000),
-rider_age int
+    trip_id nvarchar(4000),
+    date_key int, 
+    rider_id bigint,
+    start_station_id datetime2(0),
+    end_station_id datetime2(0),
+    started_at_time datetime2(0),
+    ended_at_time datetime2(0),
+    trip_duration_min int,
+    rideable_type nvarchar(4000),
+    rider_age int
 )
-
 WITH (
-    LOCATION     = 'factpayment',
+    LOCATION = 'factpayment',
     DATA_SOURCE = [udacitydemo2hqxb_udacitydemo2hqxb_dfs_core_windows_net],
     FILE_FORMAT = [SynapseDelimitedTextFormat]
 );
-AS
+
+INSERT INTO dbo.factpayment (
+    trip_id,
+    date_key,
+    rider_id,
+    start_station_id,
+    end_station_id,
+    started_at_time,
+    ended_at_time,
+    trip_duration_min,
+    rideable_type,
+    rider_age
+)
 SELECT
-st.[trip_id] AS trip_id,
-st.[rider_id] AS rider_id,
-st.[start_station_id] AS start_station_id,
-st.[end_station_id] AS end_station_id,
-st.[start_at] AS started_at_time,
-st.[ended_at] AS ended_at_time,
-st.[rideable_type] AS rideable_type,
-FROM [dbo].[StagingTrip]st;
-
-
-TO_CHAR(p.payment_date :: DATE, 'yyyyMMDD')::integer AS date_key, 
-AS trip_duration_min, ended_at_time - started_at_time,
-rider_age, 	from StagingRider sr Join[rider_id]with StagingTrip [rider_id] st,
-sr.[birthday] datetime2(0),
-st.[start_at] datetime2(0)
-rider_age = start_at - birthday
+    st.[trip_id] AS trip_id,
+    TO_CHAR(st.[start_at] :: DATE, 'yyyyMMdd')::integer AS date_key,
+    st.[rider_id] AS rider_id,
+    st.[start_station_id] AS start_station_id,
+    st.[end_station_id] AS end_station_id,
+    st.[start_at] AS started_at_time,
+    st.[end_at] AS ended_at_time,
+    EXTRACT(minute FROM st.[end_at] - st.[start_at]) AS trip_duration_min,
+    st.[rideable_type] AS rideable_type,
+    EXTRACT(year FROM st.[start_at]) - EXTRACT(year FROM sr.[birthday]) AS rider_age
+FROM 
+    [dbo].[StagingTrip] st
+JOIN 
+    [dbo].[StagingRider] sr ON sr.[rider_id] = st.[rider_id];
