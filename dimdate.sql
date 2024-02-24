@@ -20,26 +20,29 @@ BEGIN
 END
 GO
 
-CREATE EXTERNAL TABLE dbo.DimDate (
-    [DateKey] datetime,
-    [Date] nvarchar(4000),
-    [Year] nvarchar(4000),
-    [Quarter] nvarchar(4000),
-    [Month] nvarchar(4000),
-    [Day] nvarchar(4000),
-    [DayOfWeek] nvarchar(4000),
-    [Weekend] nvarchar(4000)
+CREATE EXTERNAL TABLE dbo.dimdate (
+    [date_key] INT,
+    [date] DATE,
+    [year] INT,
+    [quarter] INT,
+    [month] INT,
+    [day] INT,
+    [day_of_week] INT,
+    [weekend] BOOLEAN
 )
-GO
-
-INSERT INTO dbo.DimDate (DateKey, [Date], [Year], [Quarter], [Month], [Day], [DayOfWeek], [Weekend])
+WITH (
+    LOCATION     = 'dimdate',
+    DATA_SOURCE = [udacitydemo2hqxb_udacitydemo2hqxb_dfs_core_windows_net],
+    FILE_FORMAT = [SynapseDelimitedTextFormat]
+)
+AS
 SELECT DISTINCT
-    TO_CHAR(payment_date :: DATE, 'yyyyMMdd')::integer AS DateKey,
-    TO_CHAR(payment_date :: DATE, 'yyyy-MM-dd') AS [Date],
-    EXTRACT(year FROM payment_date) AS [Year],
-    EXTRACT(quarter FROM payment_date) AS [Quarter],
-    EXTRACT(month FROM payment_date) AS [Month],
-    EXTRACT(day FROM payment_date) AS [Day],
-    TO_CHAR(payment_date, 'D') AS [DayOfWeek],
-    CASE WHEN TO_CHAR(payment_date, 'D') IN ('6', '7') THEN 'true' ELSE 'false' END AS [Weekend]
-FROM dbo.StagingPayment;
+    CONVERT(INT, CONVERT(VARCHAR(8), date, 112)) AS date_key,
+    CONVERT(VARCHAR(10), date, 23) AS [date],
+    DATEPART(YEAR, date) AS [year],
+    DATEPART(QUARTER, date) AS [quarter],
+    DATEPART(MONTH, date) AS [month],
+    DATEPART(DAY, date) AS [day],
+    DATEPART(WEEKDAY, date) AS [day_of_week],
+    CASE WHEN DATEPART(WEEKDAY, date) IN (6, 7) THEN 1 ELSE 0 END AS [weekend]
+FROM dbo.staging_payment;
