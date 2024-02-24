@@ -29,17 +29,17 @@ INSERT INTO dbo.factpayment (
     rider_age
 )
 SELECT
-    st.[trip_id] AS trip_id,
-    TO_CHAR(st.[start_at] :: DATE, 'yyyyMMdd')::integer AS date_key,
-    st.[rider_id] AS rider_id,
-    st.[start_station_id] AS start_station_id,
-    st.[end_station_id] AS end_station_id,
-    st.[start_at] AS started_at_time,
-    st.[end_at] AS ended_at_time,
-    EXTRACT(minute FROM st.[end_at] - st.[start_at]) AS trip_duration_min,
-    st.[rideable_type] AS rideable_type,
-    EXTRACT(year FROM st.[start_at]) - EXTRACT(year FROM sr.[birthday]) AS rider_age
+    st.trip_id AS trip_id,
+    CONVERT(int, FORMAT(st.start_at, 'yyyyMMdd')) AS date_key,
+    st.rider_id AS rider_id,
+    st.start_station_id AS start_station_id,
+    st.end_station_id AS end_station_id,
+    st.start_at AS started_at_time,
+    st.end_at AS ended_at_time,
+    DATEDIFF(minute, st.start_at, st.end_at) AS trip_duration_min,
+    st.rideable_type AS rideable_type,
+    DATEDIFF(year, sr.birthday, st.start_at) AS rider_age
 FROM 
-    [dbo].[StagingTrip] st
+    dbo.StagingTrip st
 JOIN 
-    [dbo].[StagingRider] sr ON sr.[rider_id] = st.[rider_id];
+    dbo.StagingRider sr ON sr.rider_id = st.rider_id;
