@@ -1,0 +1,47 @@
+import plotly.graph_objects as go  
+  
+  
+fig.add_trace(go.Scattermapbox(  
+    lon=[label_lon],  
+    lat=[label_lat],  
+    mode='text',  
+    text=['Block GB299'],  
+    textposition='top center',  
+    textfont=dict(color='black', size=14)  
+))   
+  
+# Add the buffer zone  
+buffer_lon, buffer_lat = buffer_zone_gdf.iloc[0].geometry.exterior.xy  
+fig.add_trace(go.Scattermapbox(  
+    name='Buffer Zone',  
+    lon=list(buffer_lon),  
+    lat=list(buffer_lat),  
+    mode='lines',  
+    fill='toself',  
+    fillcolor='rgba(0, 255, 0, 0)',  
+    line=dict(color='green')  
+))  
+  
+# Add the wells within the buffer zone  
+fig.add_trace(go.Scattermapbox(  
+    name='Wells within Radius',  
+    lon=wells_within_radius.geometry.x.tolist(),  
+    lat=wells_within_radius.geometry.y.tolist(),  
+    mode='markers+text',  
+    marker=dict(size=6, color='orange'),  
+    text=wells_within_radius['Prospect_Name'],  # Assuming there's a 'Prospect_Name' column  
+    textposition='top center'  
+))  
+  
+# Update layout  
+fig.update_layout(  
+    mapbox=dict(  
+        style='open-street-map',  
+        zoom=7,  # Adjust zoom level as necessary  
+        center=dict(lat=centroid_GB299.y, lon=centroid_GB299.x)  
+    ),  
+    title='Visualization of Block GB299,  Buffer Zone, and Wells'  
+)  
+  
+# Show the figure  
+fig.show()  
