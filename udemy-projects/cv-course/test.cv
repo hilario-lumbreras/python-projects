@@ -1,18 +1,22 @@
 import plotly.graph_objects as go  
-  
-  
-fig.add_trace(go.Scattermapbox(  
+
+# Create the figure
+fig = go.Figure()
+
+# Add the polygon label as a separate layer
+fig.add_trace(go.Scattermapbox(
     lon=[label_lon],  
     lat=[label_lat],  
     mode='text',  
     text=['Block GB299'],  
     textposition='top center',  
-    textfont=dict(color='black', size=14)  
+    textfont=dict(color='black', size=10),  # Adjust font size for the label
+    name='Polygon Label'  
 ))   
-  
-# Add the buffer zone  
+
+# Add the buffer zone
 buffer_lon, buffer_lat = buffer_zone_gdf.iloc[0].geometry.exterior.xy  
-fig.add_trace(go.Scattermapbox(  
+fig.add_trace(go.Scattermapbox(
     name='Buffer Zone',  
     lon=list(buffer_lon),  
     lat=list(buffer_lat),  
@@ -21,27 +25,36 @@ fig.add_trace(go.Scattermapbox(
     fillcolor='rgba(0, 255, 0, 0)',  
     line=dict(color='green')  
 ))  
-  
-# Add the wells within the buffer zone  
-fig.add_trace(go.Scattermapbox(  
+
+# Add the wells within the buffer zone
+fig.add_trace(go.Scattermapbox(
     name='Wells within Radius',  
     lon=wells_within_radius.geometry.x.tolist(),  
     lat=wells_within_radius.geometry.y.tolist(),  
     mode='markers+text',  
     marker=dict(size=6, color='orange'),  
-    text=wells_within_radius['Prospect_Name'],  # Assuming there's a 'Prospect_Name' column  
-    textposition='top center'  
+    text=wells_within_radius['Prospect_Name'],  
+    textposition='top center',
+    textfont=dict(size=10)  # Smaller font size for well names
 ))  
-  
-# Update layout  
-fig.update_layout(  
-    mapbox=dict(  
+
+# Update layout for larger map display
+fig.update_layout(
+    mapbox=dict(
         style='open-street-map',  
-        zoom=7,  # Adjust zoom level as necessary  
+        zoom=8,  
         center=dict(lat=centroid_GB299.y, lon=centroid_GB299.x)  
     ),  
-    title='Visualization of Block GB299,  Buffer Zone, and Wells'  
-)  
-  
-# Show the figure  
-fig.show()  
+    title=dict(
+        text='Visualization of Block GB299, Buffer Zone, and Wells',
+        font=dict(size=16)  # Smaller title font size
+    ),
+    legend=dict(
+        font=dict(size=10)  # Smaller legend font size
+    ),
+    width=1000,  # Increase figure width
+    height=800   # Increase figure height
+)
+
+# Show the figure
+fig.show()
